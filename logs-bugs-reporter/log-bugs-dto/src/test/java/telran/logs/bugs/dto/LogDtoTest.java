@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.validation.Valid;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ContextConfiguration(classes=LogDtoTest.TestController.class) //what classes will be in AC
 public class LogDtoTest {
 public static @RestController class TestController {
-	static LogDto logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTION,
-			"artifact", 0, "");
+	static LogDto logDtoExp;
 	@PostMapping("/")
 	void testPost(@RequestBody @Valid LogDto logDto) {
 		assertEquals(logDtoExp, logDto);
@@ -40,9 +40,37 @@ public static @RestController class TestController {
 ObjectMapper mapper = new ObjectMapper();
 @Autowired
 MockMvc mock;
+@BeforeEach
+void setUp() {
+	TestController.logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTION,
+			"artifact", 0, "");
+}
+
 @Test
-void testPostRun() throws JsonProcessingException, Exception {
-	assertEquals(200, mock.perform(post("/")
+void testPostNormal() throws JsonProcessingException, Exception {
+	int statusExp = 200;
+	testPost(statusExp);
+}
+@Test
+void testPostNoDate() throws JsonProcessingException, Exception {
+	TestController.logDtoExp.dateTime = null;
+	int statusExp = 400;
+	testPost(statusExp);
+}
+@Test
+void testPostNoType() throws JsonProcessingException, Exception {
+	TestController.logDtoExp.logType = null;
+	int statusExp = 400;
+	testPost(statusExp);
+}
+@Test
+void testPostNoArtifact() throws JsonProcessingException, Exception {
+	TestController.logDtoExp.artifact = "";
+	int statusExp = 400;
+	testPost(statusExp);
+}
+private void testPost(int statusExp) throws Exception, JsonProcessingException {
+	assertEquals(statusExp, mock.perform(post("/")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(mapper.writeValueAsString(TestController.logDtoExp)))
 			.andReturn()
