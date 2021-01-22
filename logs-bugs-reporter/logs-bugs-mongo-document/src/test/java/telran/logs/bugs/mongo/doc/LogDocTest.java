@@ -24,9 +24,9 @@ public class LogDocTest {
 LogsRepo logs;
 @Test
 void docStoreTest() {
-	LogDto logDto = new LogDto(null, LogType.NO_EXCEPTION, "artifact",
+	LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact",
 			20, "result");
-	LogDoc doc = logs.save(new LogDoc(logDto));
+	logs.save(new LogDoc(logDto));
 	LogDoc actualDoc = logs.findAll().get(0) ;
 	assertEquals(logDto, actualDoc.getLogDto());
 	
