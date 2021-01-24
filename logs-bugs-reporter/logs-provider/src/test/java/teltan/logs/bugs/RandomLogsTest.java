@@ -69,8 +69,9 @@ public class RandomLogsTest {
 		Map<LogType, Long> logTypeOccurrences = 
 				logs.stream().collect(Collectors.groupingBy(l -> l.logType, Collectors.counting()));
 		logTypeOccurrences.forEach((k, v) -> {
-			System.out.println();
+			System.out.printf("LogType: %s, count: %d\n", k, v);
 		});
+		assertEquals(LogType.values().length, logTypeOccurrences.entrySet().size());
 		
 	}
 

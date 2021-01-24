@@ -89,7 +89,7 @@ private LogType getNonSecurityExceptionLog() {
 
 private LogType getSecurityExceptionLog() {
 	
-	return getChance() <= authenticationProb ? LogType.AUTHENTICATION_EXCEPTION : LogType.AUTHENTICATION_EXCEPTION ;
+	return getChance() <= authenticationProb ? LogType.AUTHENTICATION_EXCEPTION : LogType.AUTHORIZATION_EXCEPTION ;
 }
 
 private int getChance() {
