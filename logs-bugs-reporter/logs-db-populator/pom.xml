@@ -7,11 +7,11 @@
 		<artifactId>logs-bugs-reporter</artifactId>
 		<version>0.0.1</version>
 	</parent>
-	<artifactId>logs-provider</artifactId>
+	<artifactId>logs-db-populator</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>telran.logs.bugs</groupId>
-			<artifactId>log-bugs-dto</artifactId>
+			<artifactId>logs-bugs-mongo-document</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 
@@ -29,6 +29,11 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-stream-binder-kafka</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>6.0.13.Final</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
