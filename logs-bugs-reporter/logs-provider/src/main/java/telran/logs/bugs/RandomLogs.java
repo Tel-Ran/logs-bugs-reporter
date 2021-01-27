@@ -11,6 +11,7 @@ import telran.logs.bugs.dto.LogType;
 
 @Component
 public class RandomLogs {
+	int nClasses = 20;
 	int secExceptionProb = 30;
 	int exceptionProb = 10;
 	int authenticationProb = 70;
@@ -47,25 +48,30 @@ private void fillLogTypeArtifactMap(EnumMap<LogType, String> res, LogType lt) {
 		res.put(LogType.AUTHORIZATION_EXCEPTION, "authorization");
 		break;
 	case BAD_REQUEST_EXCEPTION:
-		res.put(LogType.BAD_REQUEST_EXCEPTION, "class");
+		res.put(LogType.BAD_REQUEST_EXCEPTION, getRandomClassName());
 		break;
 	case DUPLICATED_KEY_EXCEPTION:
-		res.put(LogType.DUPLICATED_KEY_EXCEPTION, "class");
+		res.put(LogType.DUPLICATED_KEY_EXCEPTION, getRandomClassName());
 		break;
 	case  NOT_FOUND_EXCEPTION:
-		res.put(LogType. NOT_FOUND_EXCEPTION, "class");
+		res.put(LogType. NOT_FOUND_EXCEPTION, getRandomClassName());
 		break;
 	case NO_EXCEPTION:
-		res.put(LogType. NO_EXCEPTION, "class");
+		res.put(LogType. NO_EXCEPTION, getRandomClassName());
 		break;
 	case SERVER_EXCEPTION:
-		res.put(LogType. SERVER_EXCEPTION, "class");
+		res.put(LogType. SERVER_EXCEPTION, getRandomClassName());
 		break;
 	
 	
 	}
 }
 
+
+private String getRandomClassName() {
+	
+	return "class" + ThreadLocalRandom.current().nextInt(1, nClasses + 1);
+}
 
 private LogType getLogType() {
 	int chance = getChance();
