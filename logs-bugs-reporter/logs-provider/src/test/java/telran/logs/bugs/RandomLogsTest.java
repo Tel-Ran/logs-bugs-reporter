@@ -132,6 +132,7 @@ public class RandomLogsTest {
 			byte[] messageBytes = receivedMessage.getPayload();
 			String messageStr = new String(messageBytes);
 			set.add(messageStr);
+			System.out.println(messageStr);
 		}
 		assertEquals(N_LOGS_SENT, set.size());
 	}
