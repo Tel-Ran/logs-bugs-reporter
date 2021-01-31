@@ -51,5 +51,7 @@
 		<module>logs-provider</module>
 		<module>logs-db-populator</module>
 		<module>logs-analyzer</module>
+		<module>logs-bugs-jpa-entities</module>
+		<module>logs-bugs-openning</module>
 	</modules>
 </project>
