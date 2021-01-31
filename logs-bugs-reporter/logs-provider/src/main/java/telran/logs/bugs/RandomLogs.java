@@ -3,7 +3,7 @@ package telran.logs.bugs;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import telran.logs.bugs.dto.LogDto;
@@ -11,10 +11,18 @@ import telran.logs.bugs.dto.LogType;
 
 @Component
 public class RandomLogs {
-	int nClasses = 20;
-	int secExceptionProb = 30;
-	int exceptionProb = 10;
-	int authenticationProb = 70;
+	@Value("${app-count-classes:20}")
+	int nClasses;
+	@Value("${app-sec-exception-prob:30}")
+	int secExceptionProb;
+	@Value("${app-exception-prob:10}")
+	int exceptionProb;
+	@Value("${app-authentication-prob:70}")
+	int authenticationProb;
+	@Value("${app-min-response-time:20}")
+	int minResponseTime;
+	@Value("${app-max-response-time:200}")
+	int maxResponseTime;
 public LogDto createRandomLog() {
 	LogType logType = getLogType();
 	return new LogDto(new Date(), logType, getArtifact(logType), getResponseTime(logType), "");
@@ -23,7 +31,7 @@ public LogDto createRandomLog() {
 private int getResponseTime(LogType logType) {
 	
 	return logType == LogType.NO_EXCEPTION ?
-			ThreadLocalRandom.current().nextInt(20, 200):0;
+			ThreadLocalRandom.current().nextInt(minResponseTime, maxResponseTime):0;
 }
 
 private  String getArtifact(LogType logType) {

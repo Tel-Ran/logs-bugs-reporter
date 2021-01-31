@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.OutputDestination;
@@ -25,6 +27,7 @@ import telran.logs.bugs.dto.*;
 @SpringBootTest
 @Import(TestChannelBinderConfiguration.class)
 public class RandomLogsTest {
+	static Logger LOG = LoggerFactory.getLogger(RandomLogsTest.class);
 	private static final String AUTHENTICATION_ARTIFACT = "authentication";
 	private static final String AUTHORIZATION_ARTIFACT = "authorization";
 	private static final String CLASS_ARTIFACT = "class";
@@ -73,7 +76,7 @@ public class RandomLogsTest {
 		Map<LogType, Long> logTypeOccurrences = 
 				logs.stream().collect(Collectors.groupingBy(l -> l.logType, Collectors.counting()));
 		logTypeOccurrences.forEach((k, v) -> {
-			System.out.println();
+			LOG.debug("log type: {}; count of occurrences: {}", k, v);
 		});
 		
 	}
@@ -132,7 +135,8 @@ public class RandomLogsTest {
 			byte[] messageBytes = receivedMessage.getPayload();
 			String messageStr = new String(messageBytes);
 			set.add(messageStr);
-			System.out.println(messageStr);
+			LOG.debug("received in test: {}", messageStr);
+			
 		}
 		assertEquals(N_LOGS_SENT, set.size());
 	}
