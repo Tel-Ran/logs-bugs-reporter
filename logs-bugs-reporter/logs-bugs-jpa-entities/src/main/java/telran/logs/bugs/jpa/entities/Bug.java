@@ -24,7 +24,7 @@ Seriousness seriousness;
 @Column(nullable = false, name="openning_method")
 OpenningMethod openningMethod;
 @ManyToOne
-@JoinColumn(name="programmer_id", nullable = false)
+@JoinColumn(name="programmer_id", nullable = true)
 Programmer programmer;
 public Bug() {
 }
