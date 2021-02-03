@@ -53,5 +53,6 @@
 		<module>logs-analyzer</module>
 		<module>logs-bugs-jpa-entities</module>
 		<module>logs-bugs-openning</module>
+		<module>logs-bugs-email-provider</module>
 	</modules>
 </project>
