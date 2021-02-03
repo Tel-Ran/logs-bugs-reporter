@@ -41,7 +41,7 @@ LogDto logExceptions[] = {
 		new LogDto(new Date(), LogType.BAD_REQUEST_EXCEPTION, "no exist",
 				0, RESULT)
 };
-Programmer prExpected = new Programmer(123, "Moshe");
+Programmer prExpected = new Programmer(123, "Moshe", "moshe@gmail.com");
 Bug bugs[] = {
 		new Bug("AUTHENTICATION_EXCEPTION Something wrong", LocalDate.now(),
 				null, BugStatus.ASSIGNED, Seriousness.BLOCKING, OpenningMethod.AUTOMATIC, prExpected),
