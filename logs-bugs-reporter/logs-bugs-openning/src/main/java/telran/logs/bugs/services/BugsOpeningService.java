@@ -27,11 +27,12 @@ ArtifactsRepo artifactsRepo;
 BugsRepo bugsRepo;
 	@Bean
 	Consumer<LogDto> getBugOpeningConsumer() {
+		//consuming all log exceptions
 		return this::bugOpening;
 	}
 	@Transactional
 	void bugOpening(LogDto logException) {
-		LOG.debug("Opening service has recieved log: {}", logException);
+		LOG.debug("Bugs Opening service has recieved log: {}", logException);
 		String description = logException.logType + " " + logException.result;
 		Programmer programmer = getProgrammer(logException.artifact);
 		BugStatus bugStatus = programmer == null ? BugStatus.OPENNED : BugStatus.ASSIGNED ;
