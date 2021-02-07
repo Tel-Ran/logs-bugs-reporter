@@ -41,15 +41,17 @@ OutputDestination consumer;
 	String logsProviderArtifact;
 	@Test
 	void analyzerTestNonException() {
+		/* logDto is valid and no exception */
 		LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact", 0, "result");
-		producer.send(new GenericMessage<LogDto>(logDto));
+		sendLog(logDto);
 		assertNotNull(consumer.receive(0, bindingNameLogs));
 		assertNull(consumer.receive(0, bindingNameExceptions));
 	}
 	@Test
 	void analyzerTestException() throws JsonParseException, JsonMappingException, IOException {
+		/* logDto is valid and exception */
 		LogDto logDto = new LogDto(new Date(), LogType.AUTHENTICATION_EXCEPTION, "artifact", 0, "result");
-		producer.send(new GenericMessage<LogDto>(logDto));
+		sendLog(logDto);
 		Message<byte[]> message = consumer.receive(0, bindingNameExceptions);
 		assertNotNull(message);
 		message = consumer.receive(0, bindingNameLogs);
@@ -59,6 +61,7 @@ OutputDestination consumer;
 	}
 	@Test
 	void analyserTestNoDate() {
+		/* logDTo is invalid, no date */
 		LogDto logDto = new LogDto(null, LogType.NO_EXCEPTION, "artifact", 0, "");
 		sendLog(logDto);
 		testWrongLogDto();
@@ -66,6 +69,7 @@ OutputDestination consumer;
 
 	private void testWrongLogDto() {
 		Message<byte[]> message = consumer.receive(0, bindingNameExceptions);
+		
 		String messageStr = new String(message.getPayload());
 		assertTrue(messageStr.contains(LogType.BAD_REQUEST_EXCEPTION.toString()));
 		assertTrue(messageStr.contains(logsProviderArtifact));
@@ -76,14 +80,14 @@ OutputDestination consumer;
 	}
 
 	@Test
-	void takeLogDtoAndNoSaveNoLogType() {
+	void analyserTestNoLogType() {
 		LogDto logDto = new LogDto(new Date(), null, "artifact", 0, "");
 		sendLog(logDto);
 		testWrongLogDto();
 	}
 
 	@Test
-	void takeLogDtoAndNoSaveNoArtifact() {
+	void analyserTestNoArtifact() {
 		LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "", 0, "");
 		sendLog(logDto);
 		testWrongLogDto();
