@@ -69,7 +69,7 @@ OutputDestination consumer;
 
 	private void testWrongLogDto() {
 		Message<byte[]> message = consumer.receive(0, bindingNameExceptions);
-		
+		assertNotNull(consumer.receive(0,bindingNameLogs));
 		String messageStr = new String(message.getPayload());
 		assertTrue(messageStr.contains(LogType.BAD_REQUEST_EXCEPTION.toString()));
 		assertTrue(messageStr.contains(logsProviderArtifact));
