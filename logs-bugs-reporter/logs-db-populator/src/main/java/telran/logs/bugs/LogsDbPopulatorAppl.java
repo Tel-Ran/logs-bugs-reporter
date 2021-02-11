@@ -38,8 +38,8 @@ public class LogsDbPopulatorAppl {
 		// taking and saving to MongoDB logDto
 		LOG.debug("received log: {}", logDto);
 
-		logsRepository.save(new LogDoc(logDto));
-		LOG.debug("log: {} saved to Mongo collection", logDto);
+		logsRepository.save(new LogDoc(logDto)).subscribe(log -> LOG.debug("log: {} saved to Mongo collection", log.getLogDto()));
+		LOG.debug("start saving log and finishing of takeAndSaveLogDto method");
 
 	}
 

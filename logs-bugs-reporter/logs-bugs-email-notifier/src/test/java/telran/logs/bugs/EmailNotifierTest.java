@@ -74,6 +74,7 @@ public class EmailNotifierTest {
 		
 	}
 	private void runTest(String email, String greetingName) throws MessagingException {
+		
 		input.send(new GenericMessage<LogDto>(logException));
 		MimeMessage message = greenMail.getReceivedMessages()[0];
 		assertEquals(email, message.getAllRecipients()[0].toString());

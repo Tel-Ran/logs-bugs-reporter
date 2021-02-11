@@ -36,14 +36,14 @@ public class LogsDbPopulatorTest {
 
 	@BeforeEach
 	void setUp() {
-		logsRepo.deleteAll();
+		logsRepo.deleteAll().subscribe();
 	}
 
 	@Test
 	void takeLogDtoAndSave() {
 		LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact", 0, "");
 		sendLog(logDto);
-		List<LogDoc> logDocs = logsRepo.findAll();
+		List<LogDoc> logDocs = logsRepo.findAll().buffer().blockFirst();
 		assertEquals(1, logDocs.size());
 		assertEquals(logDto, logDocs.get(0).getLogDto());
 	}
