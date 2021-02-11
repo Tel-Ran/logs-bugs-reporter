@@ -19,6 +19,7 @@ public class EmailNotifierAppl {
 	private static final String PROGRAMMER_GREETING_NAME = "Programmer";
 	private static final String ASSIGNER_GREETING_NAME = "Opened Bugs Assigner";
 	static Logger LOG = LoggerFactory.getLogger(EmailNotifierAppl.class);
+	
 	@Autowired
 EmailProviderClient emailClient;
 	@Value("${app-subject:exception}")
@@ -59,7 +60,7 @@ EmailProviderClient emailClient;
 		String text = getText(logDto, greetingName);
 		message.setText(text);
 		mailSender.send(message);
-		LOG.debug("sent mail 'to' {} ; subject {}, text {}", text);
+		LOG.debug("sent mail 'to' {} ; subject {}, text {}", email, subject, text);
 		
 	}
 
