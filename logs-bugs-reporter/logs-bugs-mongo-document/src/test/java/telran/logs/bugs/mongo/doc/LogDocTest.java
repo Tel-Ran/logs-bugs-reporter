@@ -26,7 +26,7 @@ LogsRepo logs;
 void docStoreTest() {
 	LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact",
 			20, "result");
-	logs.save(new LogDoc(logDto)).subscribe();
+	logs.save(new LogDoc(logDto)).block();
 	LogDoc actualDoc = logs.findAll().blockFirst() ;
 	assertEquals(logDto, actualDoc.getLogDto());
 	

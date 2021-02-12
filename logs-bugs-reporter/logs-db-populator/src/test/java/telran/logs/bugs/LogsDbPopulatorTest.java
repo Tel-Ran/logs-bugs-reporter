@@ -36,7 +36,7 @@ public class LogsDbPopulatorTest {
 
 	@BeforeEach
 	void setUp() {
-		logsRepo.deleteAll().subscribe();
+		logsRepo.deleteAll().block();
 	}
 
 	@Test
