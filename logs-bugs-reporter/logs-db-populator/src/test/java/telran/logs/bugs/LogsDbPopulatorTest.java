@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class LogsDbPopulatorTest {
 	void takeLogDtoAndSave() {
 		LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact", 0, "");
 		sendLog(logDto);
-		List<LogDoc> logDocs = logsRepo.findAll().buffer().blockFirst();
+		List<LogDoc> logDocs = logsRepo.findAll().buffer(Duration.ofMillis(10)).blockFirst();
 		assertEquals(1, logDocs.size());
 		assertEquals(logDto, logDocs.get(0).getLogDto());
 	}
