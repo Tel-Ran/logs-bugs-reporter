@@ -57,5 +57,6 @@
 		<module>logs-bugs-email-notifier</module>
 		<module>logs-bugs-assigner-mail-provider</module>
 		<module>logs-info-back-office</module>
+		<module>logs-bugs-random</module>
 	</modules>
 </project>

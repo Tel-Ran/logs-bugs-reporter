@@ -14,6 +14,11 @@
 			<artifactId>log-bugs-dto</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>telran.logs.bugs</groupId>
+			<artifactId>logs-bugs-random</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

@@ -1,4 +1,4 @@
-package telran.logs.bugs;
+package telran.logs.bugs.random;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -109,5 +109,29 @@ private LogType getSecurityExceptionLog() {
 private int getChance() {
 	
 	return ThreadLocalRandom.current().nextInt(1, 101);
+}
+
+public int getnClasses() {
+	return nClasses;
+}
+
+public int getSecExceptionProb() {
+	return secExceptionProb;
+}
+
+public int getExceptionProb() {
+	return exceptionProb;
+}
+
+public int getAuthenticationProb() {
+	return authenticationProb;
+}
+
+public int getMinResponseTime() {
+	return minResponseTime;
+}
+
+public int getMaxResponseTime() {
+	return maxResponseTime;
 }
 }
