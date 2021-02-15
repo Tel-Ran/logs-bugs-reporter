@@ -21,8 +21,8 @@ LogRepository logRepository;
 
 	@Override
 	public Flux<LogDto> getAllExceptions() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return logRepository.findByLogTypeNot(LogType.NO_EXCEPTION);
 	}
 
 	@Override

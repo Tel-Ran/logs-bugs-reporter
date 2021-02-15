@@ -27,4 +27,10 @@ Flux<LogDto> getAllLogs() {
 			LOG.debug("Logs of type {} sent to a client", logType);
 		return result;
 	}
+	@GetMapping(value="/logs/exceptions")
+	Flux<LogDto> getExceptions() {
+			Flux<LogDto> result = logsInfo.getAllExceptions();
+			LOG.debug("Logs Exceptions sent to a client");
+		return result;
+	}
 }

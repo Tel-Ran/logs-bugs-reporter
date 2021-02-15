@@ -12,4 +12,6 @@ public interface LogRepository extends ReactiveMongoRepository<LogDoc, ObjectId>
 
 	Flux<LogDto> findByLogType(LogType logType);
 
+	Flux<LogDto> findByLogTypeNot(LogType logType);
+
 }
