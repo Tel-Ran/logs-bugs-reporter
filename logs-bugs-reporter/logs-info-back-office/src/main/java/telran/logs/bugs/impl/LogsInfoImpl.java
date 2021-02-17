@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
+import telran.logs.bugs.dto.ArtifactCount;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.dto.LogType;
+import telran.logs.bugs.dto.LogTypeCount;
 import telran.logs.bugs.interfaces.LogsInfo;
 import telran.logs.bugs.mongo.doc.LogDoc;
 import telran.logs.bugs.repo.LogRepository;
@@ -29,6 +31,30 @@ LogRepository logRepository;
 	public Flux<LogDto> getLogsType(LogType logType) {
 		
 		return logRepository.findByLogType(logType);
+	}
+
+	@Override
+	public Flux<LogTypeCount> getLogTypeOccurrences() {
+		
+		return logRepository.getLogTypeCounts();
+	}
+
+	@Override
+	public Flux<LogType> getMostEncounteredExceptionTypes(int nExceptions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Flux<ArtifactCount> getArtifactOccurrences() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Flux<String> getMostEncounteredArtifacts(int nArtifacts) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
