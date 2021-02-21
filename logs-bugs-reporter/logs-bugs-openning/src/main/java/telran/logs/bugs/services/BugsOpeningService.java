@@ -12,8 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import telran.logs.bugs.dto.BugStatus;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.dto.LogType;
+import telran.logs.bugs.dto.OpenningMethod;
+import telran.logs.bugs.dto.Seriousness;
 import telran.logs.bugs.jpa.entities.*;
 import telran.logs.bugs.repo.ArtifactsRepo;
 import telran.logs.bugs.repo.BugsRepo;

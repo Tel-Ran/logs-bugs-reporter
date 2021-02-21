@@ -1,4 +1,4 @@
-package telran.logs.bugs.jpa.entities;
+package telran.logs.bugs.dto;
 
 public enum BugStatus {
 ASSIGNED, OPENNED, CLOSED

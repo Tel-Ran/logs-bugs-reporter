@@ -2,6 +2,10 @@ package telran.logs.bugs.jpa.entities;
 import java.time.LocalDate;
 
 import javax.persistence.*;
+
+import telran.logs.bugs.dto.BugStatus;
+import telran.logs.bugs.dto.OpenningMethod;
+import telran.logs.bugs.dto.Seriousness;
 @Entity
 @Table(name="bugs")
 public class Bug {
@@ -87,6 +91,45 @@ public boolean equals(Object obj) {
 	if (status != other.status)
 		return false;
 	return true;
+}
+public String getDescription() {
+	return description;
+}
+public void setDescription(String description) {
+	this.description = description;
+}
+public LocalDate getDateClose() {
+	return dateClose;
+}
+public void setDateClose(LocalDate dateClose) {
+	this.dateClose = dateClose;
+}
+public BugStatus getStatus() {
+	return status;
+}
+public void setStatus(BugStatus status) {
+	this.status = status;
+}
+public Seriousness getSeriousness() {
+	return seriousness;
+}
+public void setSeriousness(Seriousness seriousness) {
+	this.seriousness = seriousness;
+}
+public Programmer getProgrammer() {
+	return programmer;
+}
+public void setProgrammer(Programmer programmer) {
+	this.programmer = programmer;
+}
+public long getId() {
+	return id;
+}
+public LocalDate getDateOpen() {
+	return dateOpen;
+}
+public OpenningMethod getOpenningMethod() {
+	return openningMethod;
 }
 
 
