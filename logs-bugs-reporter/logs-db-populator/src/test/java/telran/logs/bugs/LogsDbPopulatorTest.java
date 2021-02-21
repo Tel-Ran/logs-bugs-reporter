@@ -44,7 +44,8 @@ public class LogsDbPopulatorTest {
 	void takeLogDtoAndSave() {
 		LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact", 0, "");
 		sendLog(logDto);
-		List<LogDoc> logDocs = logsRepo.findAll().buffer(Duration.ofMillis(10)).blockFirst();
+		List<LogDoc> logDocs = logsRepo.findAll().delaySubscription(Duration.ofMillis(100))
+				.buffer().blockFirst();
 		assertEquals(1, logDocs.size());
 		assertEquals(logDto, logDocs.get(0).getLogDto());
 	}
