@@ -2,6 +2,7 @@ package telran.logs.bugs;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.validation.constraints.*;
@@ -31,8 +32,8 @@ public class BugsReporterTests {
 	private static final @Email String EMAIL ="moshe@gmail.com";
 	BugDto bugUnAssigned = new BugDto(Seriousness.BLOCKING, DESCRIPTION,
 			DATE_OPEN);
-	BugDto bugAssigned2 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE);
-	BugDto bugAssigned3 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE);
+	BugAssignDto bugAssigned2 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE);
+	BugAssignDto bugAssigned3 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE);
 	BugResponseDto expectedUnAssigned = new BugResponseDto(1, Seriousness.BLOCKING, DESCRIPTION,
 			DATE_OPEN, 0, null, BugStatus.OPENNED, OpenningMethod.MANUAL);
 	BugResponseDto expectedAssigned2 = new BugResponseDto(2, Seriousness.BLOCKING, DESCRIPTION,
@@ -50,6 +51,10 @@ WebTestClient testClient;
 	void addProgrammers() {
 		ProgrammerDto programmer = new ProgrammerDto(PROGRAMMER_ID_VALUE,"Moshe", EMAIL);
 		
+		addProgrammerRequest(programmer);
+	}
+
+	private void addProgrammerRequest(ProgrammerDto programmer) {
 		testClient.post().uri(BUGS_PROGRAMMERS)
 		.contentType(MediaType.APPLICATION_JSON).bodyValue(programmer)
 		.exchange().expectStatus().isOk().expectBody(ProgrammerDto.class);
@@ -66,10 +71,13 @@ WebTestClient testClient;
 	@Order(3) 
 	void openAndAssign() {
 		
-		testClient.post().uri(BUGS_OPEN_ASSIGN).bodyValue(bugAssigned2).exchange().expectStatus()
-		.isOk().expectBody(BugResponseDto.class).isEqualTo(expectedAssigned2);
-		testClient.post().uri(BUGS_OPEN_ASSIGN).bodyValue(bugAssigned3).exchange().expectStatus()
-		.isOk().expectBody(BugResponseDto.class).isEqualTo(expectedAssigned3);
+		openAssignRequest(bugAssigned2, expectedAssigned2);
+		openAssignRequest(bugAssigned3, expectedAssigned3);
+	}
+
+	private void openAssignRequest(BugAssignDto bugAssignDto, BugResponseDto bugResponseDto) {
+		testClient.post().uri(BUGS_OPEN_ASSIGN).bodyValue(bugAssignDto).exchange().expectStatus()
+		.isOk().expectBody(BugResponseDto.class).isEqualTo(bugResponseDto);
 	}
 	@Test
 	@Order(4)
@@ -83,6 +91,11 @@ WebTestClient testClient;
 	void bugsProgrammers() {
 		testClient.get().uri(BUGS_PROGRAMMERS + "?" + PROGRAMMER_ID + "=" + PROGRAMMER_ID_VALUE).exchange().expectStatus().isOk()
 		.expectBodyList(BugResponseDto.class).isEqualTo(expectedBugs123);
+	}
+	@Test
+	void bugsProgrammersNoProgrammerID() {
+		testClient.get().uri(BUGS_PROGRAMMERS + "?" + PROGRAMMER_ID + "=" + 10000).exchange().expectStatus().isOk()
+		.expectBodyList(BugResponseDto.class).isEqualTo(new LinkedList<>());
 	}
 	@Test
 	void invalidOpenBug() {
