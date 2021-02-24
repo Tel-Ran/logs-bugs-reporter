@@ -42,9 +42,15 @@ void assignBug(@Valid @RequestBody AssignBugData assignData) {
 	bugsReporter.assignBug(assignData);
 }
 @GetMapping(BUGS_PROGRAMMERS)
-List<BugResponseDto> getBugsOfProgrammer(@RequestParam(name=PROGRAMMER_ID) long programmerId) {
+List<BugResponseDto> getBugsOfProgrammer(@RequestParam(name=PROGRAMMER_ID)  long programmerId) {
 	List<BugResponseDto> result = bugsReporter.getBugsProgrammer(programmerId);
 	LOG.debug("found {} bugs", result.size());
+	return result ;
+}
+@GetMapping(BUGS_PROGRAMMERS_COUNT)
+List<EmailBugsCount> getEmailBugsCount() {
+	List<EmailBugsCount> result = bugsReporter.getEmailBugsCounts();
+	result.forEach(ec -> LOG.debug("email: {}; count: {}", ec.getEmail(),ec.getCount()));
 	return result ;
 }
 }
