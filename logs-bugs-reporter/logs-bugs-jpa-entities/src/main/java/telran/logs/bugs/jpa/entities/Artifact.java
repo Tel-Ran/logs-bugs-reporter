@@ -1,7 +1,7 @@
 package telran.logs.bugs.jpa.entities;
 import javax.persistence.*;
 @Entity
-@Table(name="artifacts")
+@Table(name="artifacts", indexes= {@Index(columnList = "programmer_id")})
 public class Artifact {
 	@Id
 	@Column(name="artifact_id")

@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import telran.logs.bugs.dto.*;
+import telran.logs.bugs.impl.BugsReporterImpl;
 import telran.logs.bugs.interfaces.BugsReporter;
 import telran.logs.bugs.jpa.entities.Programmer;
 
@@ -70,34 +71,56 @@ public EmailBugCountTest() {
 	}
 	private static final @NotEmpty String DESCRIPTION = "Not working";
 	private static final LocalDate DATE_OPEN = LocalDate.of(2020,12,1);
-	private static final @Min(1) long PROGRAMMER_ID_VALUE = 123;
-	private static final @Email String EMAIL ="moshe@gmail.com";
+	private static final @Min(1) long PROGRAMMER_ID_VALUE_MOSHE = 123;
+	private static final @Email String MOSHE_EMAIL ="moshe@gmail.com";
 	private static final @Email String VASYA_EMAIL = "vasya@gmail.com";
+	private static final String ARTIFACT_ID = "artifact123";
+	private static final @Min(1) long PROGRAMMER_ID_VALUE_VASYA = 124;
+	private static final @NotEmpty String TEST_CLOSE_DESCRIPTION = "closed by QA";
+	private static final @NotEmpty String DESCRIPTION_CLOSED = DESCRIPTION
+			+ BugsReporterImpl.CLOSING_DESCRIPTION + TEST_CLOSE_DESCRIPTION;
+	private static final @Min(1) long BUG_CLOSE_ID_VALUE = 2;
+	private static final int DAYS = 30;
 	BugDto bugUnAssigned = new BugDto(Seriousness.BLOCKING, DESCRIPTION,
 			DATE_OPEN);
-	BugAssignDto bugAssigned2 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE);
-	BugAssignDto bugAssigned3 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE);
+	BugAssignDto bugAssigned2 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE);
+	BugAssignDto bugAssigned3 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE);
 	BugResponseDto expectedUnAssigned = new BugResponseDto(1, Seriousness.BLOCKING, DESCRIPTION,
 			DATE_OPEN, 0, null, BugStatus.OPENNED, OpenningMethod.MANUAL);
 	BugResponseDto expectedAssigned2 = new BugResponseDto(2, Seriousness.BLOCKING, DESCRIPTION,
-			DATE_OPEN, PROGRAMMER_ID_VALUE, null, BugStatus.ASSIGNED, OpenningMethod.MANUAL);
+			DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE, null, BugStatus.ASSIGNED, OpenningMethod.MANUAL);
 	BugResponseDto expectedAssigned3 = new BugResponseDto(3, Seriousness.BLOCKING, DESCRIPTION,
-			DATE_OPEN, PROGRAMMER_ID_VALUE, null, BugStatus.ASSIGNED, OpenningMethod.MANUAL);
+			DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE, null, BugStatus.ASSIGNED, OpenningMethod.MANUAL);
 	BugResponseDto expectedAssigned1 = new BugResponseDto(1, Seriousness.BLOCKING, DESCRIPTION + BugsReporter.ASSIGNMENT_DESCRIPTION_TITLE,
-			DATE_OPEN, PROGRAMMER_ID_VALUE, null, BugStatus.ASSIGNED, OpenningMethod.MANUAL);
+			DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE, null, BugStatus.ASSIGNED, OpenningMethod.MANUAL);
 	List<BugResponseDto> expectedBugs123 = Arrays.asList(expectedAssigned1,
 			expectedAssigned2, expectedAssigned3);
-	List<EmailBugCountTest> expectedEmailCounts = Arrays.asList(new EmailBugCountTest(EMAIL, 3),
+	BugResponseDto expectedClosed2 = new BugResponseDto(BUG_CLOSE_ID_VALUE, Seriousness.BLOCKING, DESCRIPTION_CLOSED,
+			DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE, LocalDate.now(), BugStatus.CLOSED, OpenningMethod.MANUAL);
+	List<EmailBugCountTest> expectedEmailCounts = Arrays.asList(new EmailBugCountTest(MOSHE_EMAIL, 3),
 			new EmailBugCountTest(VASYA_EMAIL, 0));
+	List<BugResponseDto> expectedListUnClosed = Arrays.asList(expectedAssigned1,expectedAssigned3);
+	List<BugResponseDto> expectedBugsAfterColose = Arrays.asList(expectedAssigned1,
+			expectedClosed2, expectedAssigned3);
+	List<SeriousnessBugCount> seriousnessBugsDistribution = Arrays.asList(
+			new SeriousnessBugCount(Seriousness.BLOCKING, 3),
+			new SeriousnessBugCount(Seriousness.CRITICAL, 0),
+			new SeriousnessBugCount(Seriousness.MINOR, 0),
+			new SeriousnessBugCount(Seriousness.COSMETIC, 0)
+			
+			);
+	List<Seriousness> seriousnessBugsMost = Arrays.asList(Seriousness.BLOCKING);
+	
+	
 	@Autowired
 WebTestClient testClient;
 	@Test
 	@Order(1)
 	void addProgrammers() {
-		ProgrammerDto programmer = new ProgrammerDto(PROGRAMMER_ID_VALUE,"Moshe", EMAIL);
+		ProgrammerDto programmer = new ProgrammerDto(PROGRAMMER_ID_VALUE_MOSHE,"Moshe", MOSHE_EMAIL);
 		
 		addProgrammerRequest(programmer);
-		programmer = new ProgrammerDto(PROGRAMMER_ID_VALUE + 1, "Vasya", VASYA_EMAIL);
+		programmer = new ProgrammerDto(PROGRAMMER_ID_VALUE_VASYA, "Vasya", VASYA_EMAIL);
 		addProgrammerRequest(programmer);
 	}
 
@@ -129,15 +152,42 @@ WebTestClient testClient;
 	@Test
 	@Order(4)
 	void assign() {
-		testClient.put().uri(BUGS_ASSIGN).bodyValue(new AssignBugData(1, PROGRAMMER_ID_VALUE, ""))
+		testClient.put().uri(BUGS_ASSIGN).bodyValue(new AssignBugData(1, PROGRAMMER_ID_VALUE_MOSHE, ""))
 		.exchange().expectStatus().isOk();
 		
 	}
 	@Test
 	@Order(5)
-	void bugsProgrammers() {
-		testClient.get().uri(BUGS_PROGRAMMERS + "?" + PROGRAMMER_ID + "=" + PROGRAMMER_ID_VALUE).exchange().expectStatus().isOk()
-		.expectBodyList(BugResponseDto.class).isEqualTo(expectedBugs123);
+	void bugsProgrammersBeforeClose() {
+		List<BugResponseDto> expectedList = expectedBugs123;
+		bugsProgrammerTest(expectedList);
+	}
+
+	private void bugsProgrammerTest(List<BugResponseDto> expectedList) {
+		String uriStr = BUGS_PROGRAMMERS + "?" + PROGRAMMER_ID + "=" + PROGRAMMER_ID_VALUE_MOSHE;
+		getListBugs(expectedList, uriStr);
+	}
+
+	private void getListBugs(List<BugResponseDto> expectedList, String uriStr) {
+		testClient.get().uri(uriStr).exchange().expectStatus().isOk()
+		.expectBodyList(BugResponseDto.class).isEqualTo(expectedList);
+	}
+	@Test
+	@Order(6)
+	void closeBug2() {
+		CloseBugData closeData = new CloseBugData(BUG_CLOSE_ID_VALUE, null, TEST_CLOSE_DESCRIPTION);
+		testClient.put().uri(BUGS_CLOSE).contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(closeData).exchange().expectStatus().isOk();
+	}
+	@Test
+	@Order(7)
+	void unclosedBugsDuration() {
+		getListBugs(expectedListUnClosed, BUGS_UNCLOSED + "?" + N_DAYS + "=" + DAYS);
+	}
+	@Test
+	@Order(8)
+	void bugsProgrammersAfterClosing() {
+		bugsProgrammerTest(expectedBugsAfterColose);
 	}
 	@Test
 	void bugsProgrammersNoProgrammerID() {
@@ -159,14 +209,59 @@ WebTestClient testClient;
 	}
 	@Test
 	void invalidAssignBug() {
-		invalidPutRequest(BUGS_ASSIGN, new AssignBugData(0, PROGRAMMER_ID_VALUE, DESCRIPTION));
+		invalidPutRequest(BUGS_ASSIGN, new AssignBugData(0, PROGRAMMER_ID_VALUE_MOSHE, DESCRIPTION));
 	}
 	@Test
 	void emailCounts() {
 		testClient.get().uri(BUGS_PROGRAMMERS_COUNT).exchange().expectStatus().isOk()
 		.expectBodyList(EmailBugCountTest.class).isEqualTo(expectedEmailCounts);
 	}
-	
+	@Test
+	void addArtifact() {
+		ArtifactDto artifactDto = new ArtifactDto(ARTIFACT_ID, PROGRAMMER_ID_VALUE_MOSHE);
+		testClient.post().uri(BUGS_ARTIFACTS).contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(artifactDto)
+		.exchange().expectStatus().isOk().expectBody(ArtifactDto.class).isEqualTo(artifactDto);
+		
+	}
+	@Test
+	void invalidAddArtifact() {
+		ArtifactDto invalidArtifact = new ArtifactDto("", PROGRAMMER_ID_VALUE_MOSHE);
+		invalidPostRequest(BUGS_ARTIFACTS, invalidArtifact);
+	}
+	@Test
+	void invalidCloseBug() {
+		CloseBugData invalidCloseData = new CloseBugData(0, null, null);
+		invalidPutRequest(BUGS_CLOSE, invalidCloseData);
+	}
+	@Test
+	void programmersMostBugs() {
+		
+		getArrayProgrammers(BUGS_PROGRAMMERS_MOST, new String[] {MOSHE_EMAIL});
+		
+	}
+	@Test
+	void programmersLeastBugs() {
+		
+		getArrayProgrammers(BUGS_PROGRAMMERS_LEAST, new String[] {VASYA_EMAIL, MOSHE_EMAIL});
+		
+	}
+	@Test
+
+	private void getArrayProgrammers(String uriStr, String[] expected) {
+		testClient.get().uri(uriStr).exchange().expectStatus().isOk()
+		.expectBody(String[].class).isEqualTo(expected);
+	}
+	@Test
+	void seriousnessDistribution() {
+		testClient.get().uri(BUGS_SERIOUSNESS_COUNT).exchange().expectStatus().isOk()
+		.expectBodyList(SeriousnessBugCount.class).isEqualTo(seriousnessBugsDistribution);
+	}
+	@Test
+	void seriousnessMostBugs() {
+		testClient.get().uri(BUGS_SERIOUSNESS_MOST).exchange().expectStatus().isOk()
+		.expectBodyList(Seriousness.class).isEqualTo(seriousnessBugsMost);
+	}
 
 	private void invalidPostRequest(String uriStr, Object invalidObject) {
 		testClient.post().uri(uriStr).contentType(MediaType.APPLICATION_JSON).bodyValue(invalidObject)
