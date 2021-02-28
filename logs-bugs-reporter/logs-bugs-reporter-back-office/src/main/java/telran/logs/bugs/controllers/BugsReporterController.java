@@ -2,6 +2,7 @@ package telran.logs.bugs.controllers;
 
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import telran.logs.bugs.dto.*;
@@ -11,8 +12,10 @@ import static telran.logs.bugs.api.BugsReporterApi.*;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 @RestController
+@Validated //make spring validate annotated parameters of GET requests 
 public class BugsReporterController {
 	static Logger LOG = LoggerFactory.getLogger(BugsReporterController.class);
 @Autowired
@@ -91,9 +94,10 @@ List<SeriousnessBugCount> getSeriousnessBugsCounts() {
 	return res ;
 }
 @GetMapping(BUGS_SERIOUSNESS_MOST)
-List<Seriousness> getSeriousnessBugsMost(@RequestParam (name = N_TYPES, defaultValue = "2") int nTypes) {
+List<Seriousness> getSeriousnessBugsMost(@RequestParam (name = N_TYPES, defaultValue = "2")
+@Min(1) int nTypes) {
 	List<Seriousness> res = bugsReporter.getSeriousnessTypesWithMostBugs(nTypes);
-	LOG.debug("List of seriousness types with most bugs {}", res);
+	LOG.debug("List of seriousness types with most bugs {}; nTypes: {}", res, nTypes);
 	return res;
 }
 

@@ -262,6 +262,25 @@ WebTestClient testClient;
 		testClient.get().uri(BUGS_SERIOUSNESS_MOST).exchange().expectStatus().isOk()
 		.expectBodyList(Seriousness.class).isEqualTo(seriousnessBugsMost);
 	}
+	@Test
+	void invalidSeriousnessMostBugs() {
+		String uriStr = BUGS_SERIOUSNESS_MOST + "?" + N_TYPES + "=" + "-1";
+		invalidGetRequest(uriStr);
+	}
+	@Test
+	void invalidOpenAndAssign() {
+		BugAssignDto invalidBugAssignDto =
+				new BugAssignDto(Seriousness.BLOCKING,
+						DESCRIPTION, null, 100000);
+		testClient.post().uri(BUGS_OPEN_ASSIGN)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(invalidBugAssignDto).exchange().expectStatus().isNotFound();
+	}
+
+	private void invalidGetRequest(String uriStr) {
+		testClient.get().uri(uriStr)
+		.exchange().expectStatus().isBadRequest();
+	}
 
 	private void invalidPostRequest(String uriStr, Object invalidObject) {
 		testClient.post().uri(uriStr).contentType(MediaType.APPLICATION_JSON).bodyValue(invalidObject)

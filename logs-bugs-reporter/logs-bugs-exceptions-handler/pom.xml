@@ -5,23 +5,12 @@
     <artifactId>logs-bugs-reporter</artifactId>
     <version>0.0.1</version>
   </parent>
-  <artifactId>logs-bugs-reporter-back-office</artifactId>
+  <artifactId>logs-bugs-exceptions-handler</artifactId>
   <dependencies>
   <dependency>
   <groupId>telran.logs.bugs</groupId>
-  <artifactId>logs-bugs-jpa-entities</artifactId>
+  <artifactId>log-bugs-dto</artifactId>
   <version>0.0.1</version>
-  </dependency>
-  <dependency>
-  <groupId>telran.logs.bugs</groupId>
-  <artifactId>logs-bugs-exceptions-handler</artifactId>
-  <version>0.0.1</version>
-  </dependency>
-  
-  <dependency>
-  <groupId>com.h2database</groupId>
-  <artifactId>h2</artifactId>
-  <scope>test</scope>
   </dependency>
   </dependencies>
 </project>
