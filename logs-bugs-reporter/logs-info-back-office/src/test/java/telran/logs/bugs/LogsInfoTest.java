@@ -155,6 +155,20 @@ private <T> void runTest(T[] expected, String uriString, Class<T[]> clazz) {
 	testClient.get().uri(uriString).exchange().expectStatus().isOk()
 	.expectBody(clazz).isEqualTo(expected);
 }
+@Test
+void badRequestMostArtifacts() {
+	String uriStr = LOGS_ARTIFACT_ENCOUNTERED + "?" + AMOUNT + "=-1";
+	badGetRequest(uriStr);
+}
+@Test
+void badRequestMostExceptionTypes() {
+	String uriStr = LOGS_EXCEPTION_ENCOUNTERED + "?" + AMOUNT + "=0";
+	badGetRequest(uriStr);
+}
+private void badGetRequest(String uriStr) {
+	testClient.get().uri(uriStr)
+	.exchange().expectStatus().isBadRequest();
+}
 
 
 }

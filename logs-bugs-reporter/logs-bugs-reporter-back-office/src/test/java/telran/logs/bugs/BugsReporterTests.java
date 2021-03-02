@@ -81,6 +81,7 @@ public EmailBugCountTest() {
 			+ BugsReporterImpl.CLOSING_DESCRIPTION + TEST_CLOSE_DESCRIPTION;
 	private static final @Min(1) long BUG_CLOSE_ID_VALUE = 2;
 	private static final int DAYS = 30;
+	private static final String MOST_LEAST_INVALID_SUFFIX = "?" + N_PROGRAMMERS + "=-1";
 	BugDto bugUnAssigned = new BugDto(Seriousness.BLOCKING, DESCRIPTION,
 			DATE_OPEN);
 	BugAssignDto bugAssigned2 = new BugAssignDto(Seriousness.BLOCKING, DESCRIPTION, DATE_OPEN, PROGRAMMER_ID_VALUE_MOSHE);
@@ -163,15 +164,7 @@ WebTestClient testClient;
 		bugsProgrammerTest(expectedList);
 	}
 
-	private void bugsProgrammerTest(List<BugResponseDto> expectedList) {
-		String uriStr = BUGS_PROGRAMMERS + "?" + PROGRAMMER_ID + "=" + PROGRAMMER_ID_VALUE_MOSHE;
-		getListBugs(expectedList, uriStr);
-	}
-
-	private void getListBugs(List<BugResponseDto> expectedList, String uriStr) {
-		testClient.get().uri(uriStr).exchange().expectStatus().isOk()
-		.expectBodyList(BugResponseDto.class).isEqualTo(expectedList);
-	}
+	
 	@Test
 	@Order(6)
 	void closeBug2() {
@@ -188,6 +181,16 @@ WebTestClient testClient;
 	@Order(8)
 	void bugsProgrammersAfterClosing() {
 		bugsProgrammerTest(expectedBugsAfterColose);
+	}
+	
+	@Test
+	@Order(9)
+	void addArtifact() {
+		ArtifactDto artifactDto = new ArtifactDto(ARTIFACT_ID, PROGRAMMER_ID_VALUE_MOSHE);
+		testClient.post().uri(BUGS_ARTIFACTS).contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(artifactDto)
+		.exchange().expectStatus().isOk().expectBody(ArtifactDto.class).isEqualTo(artifactDto);
+		
 	}
 	@Test
 	void bugsProgrammersNoProgrammerID() {
@@ -209,21 +212,15 @@ WebTestClient testClient;
 	}
 	@Test
 	void invalidAssignBug() {
-		invalidPutRequest(BUGS_ASSIGN, new AssignBugData(0, PROGRAMMER_ID_VALUE_MOSHE, DESCRIPTION));
+		invalidPutRequest(BUGS_ASSIGN, new AssignBugData(0, PROGRAMMER_ID_VALUE_MOSHE,
+				DESCRIPTION));
 	}
 	@Test
 	void emailCounts() {
 		testClient.get().uri(BUGS_PROGRAMMERS_COUNT).exchange().expectStatus().isOk()
 		.expectBodyList(EmailBugCountTest.class).isEqualTo(expectedEmailCounts);
 	}
-	@Test
-	void addArtifact() {
-		ArtifactDto artifactDto = new ArtifactDto(ARTIFACT_ID, PROGRAMMER_ID_VALUE_MOSHE);
-		testClient.post().uri(BUGS_ARTIFACTS).contentType(MediaType.APPLICATION_JSON)
-		.bodyValue(artifactDto)
-		.exchange().expectStatus().isOk().expectBody(ArtifactDto.class).isEqualTo(artifactDto);
-		
-	}
+	
 	@Test
 	void invalidAddArtifact() {
 		ArtifactDto invalidArtifact = new ArtifactDto("", PROGRAMMER_ID_VALUE_MOSHE);
@@ -247,6 +244,40 @@ WebTestClient testClient;
 		
 	}
 	@Test
+	void addExistingArtifact() {
+		String uriStr = BUGS_ARTIFACTS;
+		Object objExistingId = new ArtifactDto(ARTIFACT_ID, PROGRAMMER_ID_VALUE_MOSHE);
+		postClientError(uriStr, objExistingId);
+	}
+	
+	@Test
+	void addArtifactNoProgrammer() {
+		ArtifactDto artifact = new ArtifactDto(ARTIFACT_ID + 1000, 100000);
+		postNotFound(artifact, BUGS_ARTIFACTS);
+	}
+	@Test
+	void assignBugNoProgrammer() {
+		AssignBugData assignData = new AssignBugData(1, 100000, DESCRIPTION);
+		putNotFound(assignData, BUGS_ASSIGN);
+	}
+	
+
+	@Test
+	void assignBugNoBug() {
+		AssignBugData assignData = new AssignBugData(100000, PROGRAMMER_ID_VALUE_MOSHE, DESCRIPTION);
+		putNotFound(assignData, BUGS_ASSIGN);
+	}
+	@Test
+	void closeBugNoBug() {
+		CloseBugData closeData = new CloseBugData(100000, LocalDate.now(), DESCRIPTION);
+		putNotFound(closeData, BUGS_CLOSE);
+	}
+	@Test
+	void addExistingProgrammer() {
+		ProgrammerDto programmer = new ProgrammerDto(PROGRAMMER_ID_VALUE_MOSHE, "Moshe",
+				MOSHE_EMAIL);
+		postClientError(BUGS_PROGRAMMERS, programmer);
+	}
 
 	private void getArrayProgrammers(String uriStr, String[] expected) {
 		testClient.get().uri(uriStr).exchange().expectStatus().isOk()
@@ -264,7 +295,22 @@ WebTestClient testClient;
 	}
 	@Test
 	void invalidSeriousnessMostBugs() {
-		String uriStr = BUGS_SERIOUSNESS_MOST + "?" + N_TYPES + "=" + "-1";
+		String uriStr = BUGS_SERIOUSNESS_MOST + "?" + N_TYPES + "=-1";
+		invalidGetRequest(uriStr);
+	}
+	@Test
+	void invalidProgrammersMostBugs() {
+		String uriStr = BUGS_PROGRAMMERS_MOST + MOST_LEAST_INVALID_SUFFIX;
+		invalidGetRequest(uriStr);
+	}
+	@Test
+	void invalidProgrammersLeastBugs() {
+		String uriStr = BUGS_PROGRAMMERS_LEAST + MOST_LEAST_INVALID_SUFFIX;
+		invalidGetRequest(uriStr);
+	}
+	@Test 
+	void invalidGetUnclosed() {
+		String uriStr = BUGS_UNCLOSED + "?" + N_DAYS + "=-1";
 		invalidGetRequest(uriStr);
 	}
 	@Test
@@ -272,10 +318,18 @@ WebTestClient testClient;
 		BugAssignDto invalidBugAssignDto =
 				new BugAssignDto(Seriousness.BLOCKING,
 						DESCRIPTION, null, 100000);
-		testClient.post().uri(BUGS_OPEN_ASSIGN)
-		.contentType(MediaType.APPLICATION_JSON)
-		.bodyValue(invalidBugAssignDto).exchange().expectStatus().isNotFound();
+		String uriStr = BUGS_OPEN_ASSIGN;
+		postNotFound(invalidBugAssignDto, uriStr);
 	}
+	@Test
+	void addExistingEmail() {
+		ProgrammerDto programmer = new ProgrammerDto(100000, "Name", MOSHE_EMAIL);
+		testClient.post().uri(BUGS_PROGRAMMERS).contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(programmer).exchange().expectStatus().is5xxServerError();
+	}
+
+	
+	
 
 	private void invalidGetRequest(String uriStr) {
 		testClient.get().uri(uriStr)
@@ -291,6 +345,30 @@ WebTestClient testClient;
 		.exchange().expectStatus().isBadRequest();
 	}
 	
+	private void bugsProgrammerTest(List<BugResponseDto> expectedList) {
+		String uriStr = BUGS_PROGRAMMERS + "?" + PROGRAMMER_ID + "=" + PROGRAMMER_ID_VALUE_MOSHE;
+		getListBugs(expectedList, uriStr);
+	}
+
+	private void getListBugs(List<BugResponseDto> expectedList, String uriStr) {
+		testClient.get().uri(uriStr).exchange().expectStatus().isOk()
+		.expectBodyList(BugResponseDto.class).isEqualTo(expectedList);
+	}
+	private void postClientError(String uriStr, Object objExistingId) {
+		testClient.post().uri(uriStr).contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(objExistingId).exchange().expectStatus().is4xxClientError();
+	}
+	private void postNotFound(Object objNotFoundId, String uriStr) {
+		testClient.post().uri(uriStr)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(objNotFoundId).exchange().expectStatus().isNotFound();
+	}
+	private void putNotFound(Object objNotFoundId, String uriStr) {
+		testClient.put().uri(uriStr)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(objNotFoundId).exchange().expectStatus().isNotFound();
+		
+	}
 	
 }
 
