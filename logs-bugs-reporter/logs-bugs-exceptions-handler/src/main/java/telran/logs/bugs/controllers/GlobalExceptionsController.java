@@ -1,6 +1,5 @@
 package telran.logs.bugs.controllers;
 
-import java.rmi.ServerException;
 
 import javax.validation.ConstraintViolationException;
 
