@@ -36,6 +36,7 @@ EmailProviderClient emailClient;
 		return this::takeLogAndSendMail;
 	}
 	void takeLogAndSendMail(LogDto logDto) {
+		LOG.debug("received log {}", logDto);
 		String email = emailClient.getEmailByArtifact(logDto.artifact);
 		String greetingName = PROGRAMMER_GREETING_NAME;
 		
