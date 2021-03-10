@@ -1,0 +1,16 @@
+version: '2.1'
+services:
+  programmer-email-provider:
+    ports:
+    - "9393:9393"
+    build:
+      logs-bugs-email-provider
+    
+  assigner-email-provider:
+    ports:
+    - "9292:9292"
+    build:
+     logs-bugs-assigner-mail-provider
+  email-notifier:
+    build:
+      logs-bugs-email-notifier
