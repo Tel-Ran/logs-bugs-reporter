@@ -40,7 +40,7 @@ EmailProviderClient emailClient;
 		String email = emailClient.getEmailByArtifact(logDto.artifact);
 		String greetingName = PROGRAMMER_GREETING_NAME;
 		
-		if (email.isEmpty()) {
+		if (email == null || email.isEmpty()) {
 			greetingName = ASSIGNER_GREETING_NAME;
 			LOG.warn("Not received email for artifact {}", logDto.artifact);
 			email = emailClient.getAssignerMail();
