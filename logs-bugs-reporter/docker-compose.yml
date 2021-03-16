@@ -1,23 +1,37 @@
 version: '2.1'
 services:
+  discovery-server:
+    ports:
+      - "8761:8761"
+    build:
+      logs-bugs-discovery-server
+      
   programmer-email-provider:
     build:
       logs-bugs-email-provider
+    mem_limit: 350m
+    mem_reservation: 100M
     environment:
       - POSTGRES_PASSWORD=d584e5dd7eb6d86217d03dc29a0349d8944d297bf14b16f3d13f2fa24d54c7e2
     
   assigner-email-provider:
     build:
      logs-bugs-assigner-mail-provider
+    mem_limit: 350m
+    mem_reservation: 100M
    
   logs-analyzer:
     build:
       logs-analyzer
+    mem_limit: 350m
+    mem_reservation: 100M
     environment:
       - KAFKA_PASSWORD=BM9BIkYLWaWWwGXS2EmiuYMJZjIy4PuU
   email-notifier:
     build:
       logs-bugs-email-notifier
+    mem_limit: 350m
+    mem_reservation: 100M
     environment:
       - MAIL_PASSWORD=kvsivnyxicymnxbr
       - KAFKA_PASSWORD=BM9BIkYLWaWWwGXS2EmiuYMJZjIy4PuU
@@ -25,6 +39,8 @@ services:
   bugs-opening:
     build:
       logs-bugs-openning
+    mem_limit: 350m
+    mem_reservation: 100M
     environment:
       - POSTGRES_PASSWORD=d584e5dd7eb6d86217d03dc29a0349d8944d297bf14b16f3d13f2fa24d54c7e2
       - KAFKA_PASSWORD=BM9BIkYLWaWWwGXS2EmiuYMJZjIy4PuU
@@ -32,6 +48,8 @@ services:
   bugs-reporter-back:
     ports:
       - "8282:8282"
+    mem_limit: 350m
+    mem_reservation: 100M
     build:
       logs-bugs-reporter-back-office
     environment:
@@ -40,6 +58,9 @@ services:
   logs-populator:
     build:
       logs-db-populator
+    mem_limit: 350m
+    mem_reservation: 100M
+    
     environment:
       - MONGO_PASSWORD=12345.com
       - KAFKA_PASSWORD=BM9BIkYLWaWWwGXS2EmiuYMJZjIy4PuU
@@ -47,6 +68,8 @@ services:
   logs-back:
     ports:
       - "8383:8080"
+    mem_limit: 350m
+    mem_reservation: 100M
     build:
       logs-info-back-office
     environment:

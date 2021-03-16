@@ -5,20 +5,12 @@
     <artifactId>logs-bugs-reporter</artifactId>
     <version>0.0.1</version>
   </parent>
-  <artifactId>logs-bugs-assigner-mail-provider</artifactId>
-  <build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+  <artifactId>logs-bugs-discovery-server</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>org.springframework.cloud</groupId>
   		<artifactId>
-  			spring-cloud-starter-netflix-eureka-client
+  			spring-cloud-starter-netflix-eureka-server
   		</artifactId>
   	</dependency>
   </dependencies>
@@ -33,4 +25,12 @@
   		</dependency>
   	</dependencies>
   </dependencyManagement>
+  <build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>
