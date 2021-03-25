@@ -54,5 +54,6 @@
 		<module>logs-bugs-reporter-back-office</module>
 		<module>logs-bugs-exceptions-handler</module>
 		<module>logs-bugs-discovery-server</module>
+		<module>logs-bugs-gateway</module>
 	</modules>
 </project>
