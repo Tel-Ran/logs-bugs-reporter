@@ -5,39 +5,17 @@
     <artifactId>logs-bugs-reporter</artifactId>
     <version>0.0.1</version>
   </parent>
-  <artifactId>logs-bugs-gateway</artifactId>
-  <build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+  <artifactId>logs-bugs-loadbalancer</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>org.springframework.cloud</groupId>
-  		<artifactId>spring-cloud-gateway-webflux</artifactId>
+  		<artifactId>spring-cloud-starter-loadbalancer</artifactId>
   	</dependency>
   	<dependency>
-  		<groupId>org.springframework.boot</groupId>
-  		<artifactId>spring-boot-starter-security</artifactId>
-  	</dependency>
-  	<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-  	<dependency>
-  	<groupId>telran.logs.bugs</groupId>
-    <artifactId>logs-bugs-loadbalancer</artifactId>
-    <version>0.0.1</version>
-  	</dependency>
-  	
-  	<dependency>
-  	<groupId>telran.logs.bugs</groupId>
-    <artifactId>log-bugs-dto</artifactId>
-    <version>0.0.1</version>
+  		<groupId>org.springframework.cloud</groupId>
+  		<artifactId>
+  			spring-cloud-starter-netflix-eureka-client
+  		</artifactId>
   	</dependency>
   </dependencies>
   <dependencyManagement>
@@ -51,5 +29,4 @@
   		</dependency>
   	</dependencies>
   </dependencyManagement>
-  
 </project>
