@@ -1,9 +1,11 @@
 package telran.logs.bugs;
 
-import java.util.Base64;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import static telran.logs.bugs.api.LogsInfoApi.*;
 import static telran.logs.bugs.api.BugsReporterApi.*;
 import static telran.logs.bugs.security.configuration.SecurityConfiguration.*;
 
+import telran.logs.bugs.dto.AuthData;
 import telran.logs.bugs.security.configuration.UserDetailsRefreshService;
 import telran.logs.bugs.service.ProxyService;
 
@@ -37,15 +40,16 @@ public class LogsBugsGatewayTest {
 	private static final String PASSWORD = "developer";
 	@Autowired
 	WebTestClient testClient;
-	@MockBean
-	RestTemplate mockRestTemplate;
+	
 	@Autowired
 	ConcurrentHashMap<String, UserDetails> users;
 	@MockBean
 	UserDetailsRefreshService refreshService;
 	@MockBean
 	ProxyService proxyService;
-	
+	static String jwt;
+	AuthData correctAuthData = new AuthData(USERNAME, PASSWORD);
+	AuthData wrongAuthData = new AuthData(USERNAME, "xxxx");
 	@BeforeEach
 	void setUp() {
 		doNothing().when(refreshService).start();
@@ -54,6 +58,63 @@ public class LogsBugsGatewayTest {
 		users.putIfAbsent(USERNAME, new User(USERNAME, NOOP_PASSWORD,
 				AuthorityUtils.createAuthorityList(ROLE_DEVELOPER)));
 	}
+	/*********************************************************************/
+	//login tests and getting JWT token
+	@Test
+	@Order(1)
+	void loginNormal() {
+		
+		jwt = testClient.post().uri(LOGIN).bodyValue(correctAuthData )
+		.exchange().expectStatus().isOk().returnResult(String.class)
+		.getResponseBody().blockFirst();
+		assertNotNull(jwt);
+		assertEquals(3, jwt.split("\\.").length);
+	}
+	@Test
+	void loginWrongAuthData() {
+		testClient.post().uri(LOGIN).bodyValue(wrongAuthData )
+		.exchange().expectStatus().isBadRequest();
+	}
+	/************************************************************************/
+	/* Authentication tests */
+	@Test
+	@Order(2)
+	void authenticationTestNormal() {
+		String authToken = "Bearer " + jwt;
+		testClient.get().uri(LOGS_BACK + LOGS)
+		.header("Authorization", authToken)
+		.exchange().expectStatus().isOk();
+		
+	}
+	@Test
+	@Order(3)
+	void authenticationTestErrorNoToken() {
+		
+		testClient.get().uri(LOGS_BACK + LOGS)
+		
+		.exchange().expectStatus().isEqualTo(401);
+	}
+	@Test
+	@Order(4)
+	void authenticationTestErrorWrongToken() {
+		
+		String authToken = "Bearer " + jwt.substring(1);
+		testClient.get().uri(LOGS_BACK + LOGS)
+		.header("Authorization", authToken)
+		.exchange().expectStatus().isEqualTo(401);
+	}
+	@Test
+	@Order(5)
+	void authenticationTestExpiredToken() throws InterruptedException {
+		Thread.sleep(2000); //makes token be expired
+		String authToken = "Bearer " + jwt;
+		testClient.get().uri(LOGS_BACK + LOGS)
+		.header("Authorization", authToken)
+		.exchange().expectStatus().isEqualTo(401);
+		
+	}
+	/*****************************************************************/
+	/*******************************************************************/
 	/* Authorization Tests Normal*/
 	@Test
 	
@@ -150,6 +211,7 @@ public class LogsBugsGatewayTest {
 		.exchange().expectStatus().isEqualTo(403);
 	}
 	@Test
+	
 	@WithMockUser(roles = {TESTER})
 	void bugsAddArtifactError() {
 		testClient.post().uri(BUGS_REPORTER_BACK + BUGS_ARTIFACTS).bodyValue("xxx")
@@ -157,24 +219,7 @@ public class LogsBugsGatewayTest {
 	}
 	
 	/************************************************************************/
-	/* Authentication tests */
-	@Test
-	void authenticationTestNormal() {
-		String authToken = "Basic " + Base64.getEncoder()
-		.encodeToString((USERNAME + ":" + PASSWORD).getBytes()); 
-		testClient.get().uri(LOGS_BACK + LOGS)
-		.header("Authorization", authToken)
-		.exchange().expectStatus().isOk();
-	}
-	@Test
-	void authenticationTestError() {
-		String authToken = "Basic " + Base64.getEncoder()
-		.encodeToString((USERNAME + ":" + "XXXX").getBytes()); 
-		testClient.get().uri(LOGS_BACK + LOGS)
-		.header("Authorization", authToken)
-		.exchange().expectStatus().isEqualTo(401);
-	}
-	/*****************************************************************/
+	
 	private void bugOpeningTest(int status) {
 		testClient.post().uri(BUGS_REPORTER_BACK + BUGS_OPEN).bodyValue("xxx")
 		.exchange().expectStatus().isEqualTo(status);
