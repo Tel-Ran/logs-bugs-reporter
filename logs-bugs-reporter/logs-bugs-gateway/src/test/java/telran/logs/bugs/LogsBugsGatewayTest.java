@@ -21,6 +21,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.common.net.HttpHeaders;
+
 import reactor.core.publisher.Mono;
 import static telran.logs.bugs.api.LogsInfoApi.*;
 import static telran.logs.bugs.api.BugsReporterApi.*;
@@ -82,7 +84,7 @@ public class LogsBugsGatewayTest {
 	void authenticationTestNormal() {
 		String authToken = "Bearer " + jwt;
 		testClient.get().uri(LOGS_BACK + LOGS)
-		.header("Authorization", authToken)
+		.header(HttpHeaders.AUTHORIZATION, authToken)
 		.exchange().expectStatus().isOk();
 		
 	}
@@ -105,6 +107,16 @@ public class LogsBugsGatewayTest {
 	}
 	@Test
 	@Order(5)
+	void authenticationTestErrorWrongSignature() {
+		
+		String authToken = "Bearer " + jwt.replace(jwt.charAt(jwt.length() -2 ), 'L');
+		testClient.get().uri(LOGS_BACK + LOGS)
+		.header("Authorization", authToken)
+		.exchange().expectStatus().isEqualTo(401);
+	}
+	
+	@Test
+	@Order(6)
 	void authenticationTestExpiredToken() throws InterruptedException {
 		Thread.sleep(2000); //makes token be expired
 		String authToken = "Bearer " + jwt;

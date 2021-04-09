@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import reactor.core.publisher.Mono;
 @Component
 public class Authenticator implements ReactiveAuthenticationManager {
@@ -29,6 +30,14 @@ public class Authenticator implements ReactiveAuthenticationManager {
 		}
 		catch (ExpiredJwtException e) {
 			LOG.error("expired token");
+			return Mono.empty();
+		}
+		catch (SignatureException e) {
+			LOG.error("wrong signature");
+			return Mono.empty();
+		}
+		catch (Exception e) {
+			LOG.error("unknown exception with message {}", e.getMessage());
 			return Mono.empty();
 		}
 		UsernamePasswordAuthenticationToken authenticationObj = 
