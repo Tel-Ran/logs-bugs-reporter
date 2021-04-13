@@ -29,7 +29,7 @@ ArtifactsRepo artifactsRepo;
 	@Autowired
 BugsRepo bugsRepo;
 	@Bean
-	Consumer<LogDto> getBugOpeningConsumer() {
+	Consumer<LogDto> getExceptionsConsumer() {
 		//consuming all log exceptions
 		return this::bugOpening;
 	}

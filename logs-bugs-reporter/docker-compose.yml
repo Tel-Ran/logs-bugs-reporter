@@ -1,9 +1,17 @@
 version: '2.1'
 services:
+  logs-bugs-config:
+    
+    build:
+      logs-bugs-config-server
+    mem_limit: 350m
+    mem_reservation: 100M
   discovery-server:
     
     build:
       logs-bugs-discovery-server
+    mem_limit: 350m
+    mem_reservation: 100M
       
   programmer-email-provider:
     build:
@@ -76,6 +84,8 @@ services:
       - "9090:9090"
     mem_limit: 350m
     mem_reservation: 100M
+    environment:
+      - JWT_SECRET=jwt_secret
     
   
       

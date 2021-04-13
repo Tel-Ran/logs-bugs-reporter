@@ -2,6 +2,8 @@ package telran.logs.bugs;
 
 import java.util.function.Consumer;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,13 +18,15 @@ import telran.logs.bugs.dto.LogDto;
 
 @SpringBootApplication
 public class EmailNotifierAppl {
-	private static final String PROGRAMMER_GREETING_NAME = "Programmer";
-	private static final String ASSIGNER_GREETING_NAME = "Opened Bugs Assigner";
+	@Value("${app-programmer-greeting}")
+	private  String programmer_greetingName;
+	@Value("${app-assigner-greeting}")
+	private  String assigner_greeting_name;
 	static Logger LOG = LoggerFactory.getLogger(EmailNotifierAppl.class);
 	
 	@Autowired
 EmailProviderClient emailClient;
-	@Value("${app-subject:exception}")
+	@Value("${app-subject}")
 	String subject;
 	@Autowired
 	JavaMailSender mailSender;
@@ -30,7 +34,11 @@ EmailProviderClient emailClient;
 		SpringApplication.run(EmailNotifierAppl.class, args);
 
 	}
-	
+	@PostConstruct
+	void initForConfigurationDebug() {
+		LOG.debug("greeting_programmer_name: {}, greeting_assigner_name: {},"
+				+ " subject: {}",programmer_greetingName, assigner_greeting_name, subject );
+	}
 	@Bean
 	Consumer<LogDto> getExceptionsConsumer(){
 		return this::takeLogAndSendMail;
@@ -38,10 +46,10 @@ EmailProviderClient emailClient;
 	void takeLogAndSendMail(LogDto logDto) {
 		LOG.debug("received log {}", logDto);
 		String email = emailClient.getEmailByArtifact(logDto.artifact);
-		String greetingName = PROGRAMMER_GREETING_NAME;
+		String greetingName = programmer_greetingName;
 		
 		if (email == null || email.isEmpty()) {
-			greetingName = ASSIGNER_GREETING_NAME;
+			greetingName = assigner_greeting_name;
 			LOG.warn("Not received email for artifact {}", logDto.artifact);
 			email = emailClient.getAssignerMail();
 			if(email == null || email.isEmpty()) {

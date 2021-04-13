@@ -58,5 +58,6 @@
 		<module>logs-bugs-loadbalancer</module>
 		<module>logs-bugs-accounts-provider</module>
 		<module>log-bugs-accounts-mongodb</module>
-	</modules>
+		<module>logs-bugs-config-server</module>
+</modules>
 </project>
