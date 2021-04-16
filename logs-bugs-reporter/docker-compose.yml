@@ -6,12 +6,7 @@ services:
       logs-bugs-config-server
     mem_limit: 350m
     mem_reservation: 100M
-  discovery-server:
-    
-    build:
-      logs-bugs-discovery-server
-    mem_limit: 350m
-    mem_reservation: 100M
+  
       
   programmer-email-provider:
     build:

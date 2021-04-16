@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logs-bugs-configmap
+data:
+  kafka-password: BM9BIkYLWaWWwGXS2EmiuYMJZjIy4PuU
+  mongo-password: 12345.com
+  jwt-secret: secret
+  postgres-password: d584e5dd7eb6d86217d03dc29a0349d8944d297bf14b16f3d13f2fa24d54c7e2

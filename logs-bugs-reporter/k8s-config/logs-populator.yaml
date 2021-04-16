@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logs-populator-deployment
+spec:
+  selector:
+    matchLabels:
+      app: logs-populator
+  template:
+    metadata:
+      labels:
+        app: logs-populator
+    spec:
+      containers:
+      - name: logs-populator
+        image: yuragranovsky/logs-bugs-reporter_logs-populator:0.0.1
+        resources:
+          requests:
+            memory: "132Mi"
+            cpu: "100m"
+          limits:
+            memory: "350Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: KAFKA_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: logs-bugs-configmap
+                key: kafka-password
+          - name: MONGO_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: logs-bugs-configmap
+                key: mongo-password
+               
+            

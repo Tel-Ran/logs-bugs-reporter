@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logs-bugs-gateway-deployment
+spec:
+  selector:
+    matchLabels:
+      app: logs-bugs-gateway
+  template:
+    metadata:
+      labels:
+        app: logs-bugs-gateway
+    spec:
+      containers:
+      - name: logs-bugs-gateway
+        image: yuragranovsky/logs-bugs-reporter_logs-bugs-gateway:0.0.2
+        resources:
+          requests:
+            memory: "132Mi"
+            cpu: "100m"
+          limits:
+            memory: "350Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9090
+        env:
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: logs-bugs-configmap
+                key: jwt-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logs-bugs-gateway-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: logs-bugs-gateway
+  ports:
+  - port: 60000
+    protocol: TCP
+    targetPort: 9090
+    
+  
+

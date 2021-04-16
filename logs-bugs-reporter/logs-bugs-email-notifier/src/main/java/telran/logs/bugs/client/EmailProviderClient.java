@@ -17,9 +17,9 @@ public class EmailProviderClient {
 	@Autowired
 	LoadBalancer loadBalancer;
 	RestTemplate restTemplate = new RestTemplate();
-	@Value("${app-assigner-mail-service-name:assigner-email-provider}")
+	@Value("${app-assigner-mail-provider:assigner-mail-provider}")
 	String assignerServiceName;
-	@Value("${app-programmer-mail-service-name:programmer-email-provider}")
+	@Value("${app-email-provider:email-provider}")
 	String programmerServiceName;
 public String getEmailByArtifact(String artifact) {
 	String urlMailProvider = getUrlMailArtifact(artifact);

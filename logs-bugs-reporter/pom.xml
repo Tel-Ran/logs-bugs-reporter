@@ -53,7 +53,6 @@
 		<module>logs-bugs-random</module>
 		<module>logs-bugs-reporter-back-office</module>
 		<module>logs-bugs-exceptions-handler</module>
-		<module>logs-bugs-discovery-server</module>
 		<module>logs-bugs-gateway</module>
 		<module>logs-bugs-loadbalancer</module>
 		<module>logs-bugs-accounts-provider</module>

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-provider-deployment
+spec:
+  selector:
+    matchLabels:
+      app: accounts-provider
+  template:
+    metadata:
+      labels:
+        app: accounts-provider
+    spec:
+      containers:
+      - name: accounts-provider
+        image: yuragranovsky/logs-bugs-reporter_accounts-provider:0.0.2
+        resources:
+          requests:
+            memory: "132Mi"
+            cpu: "100m"
+          limits:
+            memory: "350Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MONGO_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: logs-bugs-configmap
+                key: mongo-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounts-provider
+spec:
+  type: ClusterIP
+  selector:
+    app: accounts-provider
+  ports:
+  - port: 8080
+    targetPort: 8080
+

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logs-analyzer-deployment
+spec:
+  selector:
+    matchLabels:
+      app: logs-analyzer
+  template:
+    metadata:
+      labels:
+        app: logs-analyzer
+    spec:
+      containers:
+      - name: logs-analyzer
+        image: yuragranovsky/logs-bugs-reporter_logs-analyzer:latest
+        resources:
+          requests:
+            memory: "132Mi"
+            cpu: "100m"
+          limits:
+            memory: "350Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: KAFKA_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: logs-bugs-configmap
+                key: kafka-password
+              

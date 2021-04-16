@@ -36,8 +36,10 @@ import telran.logs.bugs.dto.LogType;
 public class EmailNotifierTest {
 	private static final String EMAIL_PROGRAMMER = "moshe@gmail.com";
 	private static final String EMAIL_ASSIGNER = "assigner@gmail.com";
-	private static final String PROGRAMMER_GREETING_NAME = "Programmer";
-	private static final String ASSIGNER_GREETING_NAME = "Opened Bugs Assigner";
+	@Value("${app-programmer-greeting}") 
+	String programmer_greeting_name;
+	@Value("${app-assigner-greeting}") 
+	String assigner_greeting_name;
 	@RegisterExtension
 	static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
 	.withConfiguration(GreenMailConfiguration.aConfig().withUser("log", "logs-bugs"));
@@ -53,7 +55,7 @@ public class EmailNotifierTest {
 	void sendinMailToProgrammer() throws MessagingException {
 		when(client.getEmailByArtifact(anyString())).thenReturn(EMAIL_PROGRAMMER);
 		
-		runTest(EMAIL_PROGRAMMER, PROGRAMMER_GREETING_NAME);
+		runTest(EMAIL_PROGRAMMER, programmer_greeting_name);
 		
 	}
 	@Test
@@ -61,7 +63,7 @@ public class EmailNotifierTest {
 		when(client.getEmailByArtifact(anyString())).thenReturn("");
 		when(client.getAssignerMail()).thenReturn(EMAIL_ASSIGNER);
 		
-		runTest(EMAIL_ASSIGNER, ASSIGNER_GREETING_NAME);
+		runTest(EMAIL_ASSIGNER, assigner_greeting_name);
 		
 	}
 	@Test
