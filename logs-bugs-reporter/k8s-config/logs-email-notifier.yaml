@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logs-analyzer-deployment
+  name: email-notifier-deployment
 spec:
-  replicas: 3
   selector:
     matchLabels:
-      app: logs-analyzer
+      app: email-notifier
   template:
     metadata:
       labels:
-        app: logs-analyzer
+        app: email-notifier
     spec:
       containers:
-      - name: logs-analyzer
-        image: yuragranovsky/logs-bugs-reporter_logs-analyzer:latest
+      - name: email-notifier
+        image: yuragranovsky/logs-bugs-reporter_email-notifier:0.0.1
         resources:
           requests:
             memory: "132Mi"

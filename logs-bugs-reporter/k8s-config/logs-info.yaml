@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logs-analyzer-deployment
+  name: logs-back-deployment
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: logs-analyzer
+      app: logs-back
   template:
     metadata:
       labels:
-        app: logs-analyzer
+        app: logs-back
     spec:
       containers:
-      - name: logs-analyzer
-        image: yuragranovsky/logs-bugs-reporter_logs-analyzer:latest
+      - name: logs-back
+        image: yuragranovsky/logs-bugs-reporter_logs-back:0.0.1
         resources:
           requests:
             memory: "132Mi"
@@ -24,10 +24,23 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 8080
+        
         env:
-          - name: KAFKA_PASSWORD
+          - name: MONGO_PASSWORD
             valueFrom:
               configMapKeyRef:
                 name: logs-bugs-configmap
-                key: kafka-password
-              
+                key: mongo-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logs-back
+spec:
+  type: ClusterIP
+  selector:
+    app: logs-back
+  ports:
+  - port: 8080
+    targetPort: 8080
+

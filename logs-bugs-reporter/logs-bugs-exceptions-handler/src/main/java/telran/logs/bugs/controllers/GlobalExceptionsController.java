@@ -25,6 +25,11 @@ public class GlobalExceptionsController {
 String constraintViolationHandler(ConstraintViolationException e) {
 	return processingExceptions(e);
 	}
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+String InvalidInputHandler(IllegalArgumentException e) {
+	return processingExceptions(e);
+	}
 
 	@ExceptionHandler(DuplicatedException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)

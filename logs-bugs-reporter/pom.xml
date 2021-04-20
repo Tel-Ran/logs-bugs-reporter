@@ -58,5 +58,7 @@
 		<module>logs-bugs-accounts-provider</module>
 		<module>log-bugs-accounts-mongodb</module>
 		<module>logs-bugs-config-server</module>
-</modules>
+		<module>logging-component</module>
+		<module>logger-aspect</module>
+	</modules>
 </project>
